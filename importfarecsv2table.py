@@ -143,33 +143,26 @@ def cellsize(areainfo, datainfo):
     return csize
     
 def main(argv):
-    """This is a documentation string. Write a description of what your code
-    does here. You should generally put documentation strings ("docstrings")
-    on all your Python functions."""
-    #########################
-    #  YOUR CODE GOES HERE  #
-    #########################
-    userdim=scribus.getUnit() # get unit and change it to mm
-    scribus.setUnit(scribus.UNIT_MILLIMETERS)
-    cellwidthleft = 0
-    cellwidthright = 0
-    pos = getPosition()
-    hposition=pos[1]
-    vposition=pos[0]
-    width = pos[2]
-    height = pos[3]
-    data = getCSVdata()
-    di= getDataInformation(data)
-    ncol = len(data[0])
-    nrow = len(data)
-    scribus.messageBox("Table", "   " + str(ncol) + " columns,    " + str(nrow) + " rows   ")	#jpg
-    ColWidthList = []
-    TableWidth = 0
-    RowHeightList = []
-    TableHeight=0
-    i=0
-	
-    for row in data:
+	userdim=scribus.getUnit() # get unit and change it to mm
+	scribus.setUnit(scribus.UNIT_MILLIMETERS)
+	cellwidthleft = 0
+	cellwidthright = 0
+	pos = getPosition()
+	hposition=pos[1]
+	vposition=pos[0]
+	width = pos[2]
+	height = pos[3]
+	data = getCSVdata()
+	di= getDataInformation(data)
+	ncol = len(data[0])
+	nrow = len(data)
+	scribus.messageBox("Table", "   " + str(ncol) + " columns,    " + str(nrow) + " rows   ")	#jpg
+	ColWidthList = []
+	TableWidth = 0
+	RowHeightList = []
+	TableHeight=0
+	i=0
+	for row in data:
 		if i == 0:
 			c = 0
 			for cell in row:
@@ -183,28 +176,26 @@ def main(argv):
 		RowHeightList.append(RowHeight)
 		TableHeight = TableHeight + RowHeight
 		i = i+1
-    CellsStyle = scribus.valueDialog('Cells Style','Style name or blank?',"")
-    TextDist = float(scribus.valueDialog('Text distance','Top distance for text (mm)?',"0"))
-	
-    objectlist=[] # here we keep a record of all the created textboxes so we can group them later
-    i = 0
-    scribus.progressTotal(len(data))
-    scribus.setRedraw(False)
+	CellsStyle = scribus.valueDialog('Cells Style','Style name or blank?',"")
+	TextDist = float(scribus.valueDialog('Text distance','Top distance for text (mm)?',"0"))
+	objectlist=[] # here we keep a record of all the created textboxes so we can group them later
+	i = 0
+	scribus.progressTotal(len(data))
+	scribus.setRedraw(False)
 	rowindex = 0
-    for row in data:
+	while rowindex < len(data):
 		c = 0
-		origin_cd = row[0].strip()
-		origin = row[1].strip()
-		destination_cd = row[2].strip()
-		destination = row[3].strip()
-		fareplan = row[4].strip()
-		direction = row[5].strip()
-		fare = row[6].strip()
-		fare_onboard = row[7].strip()
+		origin_cd = data[rowindex][0].strip()
+		origin = data[rowindex][1].strip()
+		destination_cd = data[rowindex][2].strip()
+		destination = data[rowindex][3].strip()
+		fareplan = data[rowindex][4].strip()
+		direction = data[rowindex][5].strip()
+		fare = data[rowindex][6].strip()
+		fare_onboard = data[rowindex][7].strip()
 		
 		cellsize = ColWidthList[c]
 		cellHeight = RowHeightList[i]
-		
 		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.  
 		objectlist.append(textbox)
 		if len(CellsStyle) > 0:
@@ -213,7 +204,7 @@ def main(argv):
 			scribus.setTextDistances(0, 0, TextDist, 0, textbox)
 		scribus.insertText(origin, 0, textbox) # insert the origin into the textbox.
 		vposition = vposition + cellHeight # shift position of cell.  
-		c = c+1
+		c = c + 1
 		
 		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
 		objectlist.append(textbox)
@@ -223,8 +214,8 @@ def main(argv):
 			scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
 		scribus.insertText(destination, 0, textbox) # insert the destination into the textbox.
 		vposition=vposition + cellHeight # shift position of cell.  
-		c = c+1
-			
+		c = c + 1
+		rowindex = rowindex + 1
 		'''
 		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
 		objectlist.append(textbox)
@@ -264,14 +255,14 @@ def main(argv):
 		hposition = pos[1] #reset vertical position for next row
 		i = i+1
 		scribus.progressSet(i)
-		'''    
-    scribus.deselectAll()
-    scribus.groupObjects(objectlist)
-    scribus.progressReset()
-    scribus.setUnit(userdim) # reset unit to previous value
-    scribus.docChanged(True)
-    scribus.statusMessage("Done")
-    scribus.setRedraw(True)
+		'''
+	scribus.deselectAll()
+	scribus.groupObjects(objectlist)
+	scribus.progressReset()
+	scribus.setUnit(userdim) # reset unit to previous value
+	scribus.docChanged(True)
+	scribus.statusMessage("Done")
+	scribus.setRedraw(True)
 
 def main_wrapper(argv):
     """The main_wrapper() function disables redrawing, sets a sensible generic
