@@ -148,8 +148,9 @@ def main(argv):
 	cellwidthleft = 0
 	cellwidthright = 0
 	pos = getPosition()
-	hposition=pos[1]
-	vposition=pos[0]
+	# Set starting position
+	hposition = 20
+	vposition = 20
 	width = pos[2]
 	height = pos[3]
 	data = getCSVdata()
@@ -231,7 +232,7 @@ def main(argv):
 				# Add 'and' text
 				textbox = scribus.createText(hposition, vposition, cellsize, 4) # create a textbox.  
 				objectlist.append(textbox)
-				scribus.setStyle('andStyle', textbox) # set it in the style 'Headings' as defined in Scribus.  
+				scribus.setStyle('andStyle', textbox) # set it in the style 'andStyle' as defined in Scribus.  
 				scribus.insertText('and', 0, textbox) # insert the origin into the textbox.
 				vposition = vposition + 4 # Shift position of cell down.  
 				c = c + 1
@@ -239,6 +240,7 @@ def main(argv):
 		# Destination textbox
 		textbox = scribus.createText(hposition, vposition, cellsize, 10) # create a textbox.
 		objectlist.append(textbox)
+		scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
 		scribus.insertText(destination_complete, 0, textbox) # insert the destination into the textbox.
 		vposition = vposition + 10 # Shift position of cell down.  
 		c = c + 1
