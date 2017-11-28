@@ -170,29 +170,29 @@ def main(argv):
     i=0
 	
     for row in data:
-		if i==0:
-			c=0
+		if i == 0:
+			c = 0
 			for cell in row:
 				ColWidthT = (width-TableWidth)/(ncol-c)
 				ColWidth = float(ColWidthT)
 				ColWidthList.append(ColWidth)
 		TableWidth = TableWidth + ColWidth
-		c=c+1
+		c = c+1
 		RowHeightT = (height-TableHeight)/(nrow-i)
 		RowHeight = float(RowHeightT)
 		RowHeightList.append(RowHeight)
 		TableHeight = TableHeight + RowHeight
-		i=i+1
+		i = i+1
     CellsStyle = scribus.valueDialog('Cells Style','Style name or blank?',"")
     TextDist = float(scribus.valueDialog('Text distance','Top distance for text (mm)?',"0"))
 	
     objectlist=[] # here we keep a record of all the created textboxes so we can group them later
-    i=0
+    i = 0
     scribus.progressTotal(len(data))
     scribus.setRedraw(False)
-	
+	rowindex = 0
     for row in data:
-		c=0
+		c = 0
 		origin_cd = row[0].strip()
 		origin = row[1].strip()
 		destination_cd = row[2].strip()
@@ -202,20 +202,20 @@ def main(argv):
 		fare = row[6].strip()
 		fare_onboard = row[7].strip()
 		
-		cellsize=ColWidthList[c]
-		cellHeight=RowHeightList[i]
+		cellsize = ColWidthList[c]
+		cellHeight = RowHeightList[i]
 		
-		textbox=scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.  
+		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.  
 		objectlist.append(textbox)
 		if len(CellsStyle) > 0:
 			scribus.setStyle(CellsStyle, textbox)
 		if TextDist > 0:
 			scribus.setTextDistances(0, 0, TextDist, 0, textbox)
 		scribus.insertText(origin, 0, textbox) # insert the origin into the textbox.
-		vposition=vposition + cellHeight # shift position of cell.  
-		c=c+1
+		vposition = vposition + cellHeight # shift position of cell.  
+		c = c+1
 		
-		textbox=scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
+		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
 		objectlist.append(textbox)
 		if len(CellsStyle) > 0:
 			scribus.setStyle(CellsStyle, textbox)
@@ -223,10 +223,10 @@ def main(argv):
 			scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
 		scribus.insertText(destination, 0, textbox) # insert the destination into the textbox.
 		vposition=vposition + cellHeight # shift position of cell.  
-		c=c+1
+		c = c+1
 			
 		'''
-		textbox=scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
+		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
 		objectlist.append(textbox)
 		if len(CellsStyle) > 0:
 			scribus.setStyle(CellsStyle, textbox)
@@ -234,9 +234,9 @@ def main(argv):
 				scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
 			scribus.insertText(fareplan, 0, textbox) # insert the fareplan into the textbox.
 			hposition=hposition+cellsize #move the position for the next cell
-			c=c+1
+			c = c+1
 			
-		textbox=scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
+		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
 		objectlist.append(textbox)
 		if len(CellsStyle) > 0:
 			scribus.setStyle(CellsStyle, textbox)
@@ -244,8 +244,8 @@ def main(argv):
 				scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
 			scribus.insertText(fare, 0, textbox) # insert the fare into the textbox.  
 			hposition=hposition+cellsize #move the position for the next cell
-			c=c+1
-		i=i+1
+			c = c+1
+		i = i+1
 		''''''
         for cell in row:
             cell = cell.strip()
@@ -260,9 +260,9 @@ def main(argv):
             scribus.insertText(row[2],0, textbox)#insert the text into the textbox
             hposition=hposition+cellsize #move the position for the next cell
             c=c+1
-		vposition=vposition + cellHeight	#set vertical position for next row
-		hposition=pos[1] #reset vertical position for next row
-		i=i+1
+		vposition = vposition + cellHeight	#set vertical position for next row
+		hposition = pos[1] #reset vertical position for next row
+		i = i+1
 		scribus.progressSet(i)
 		'''    
     scribus.deselectAll()
