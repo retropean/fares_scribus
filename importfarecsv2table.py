@@ -166,18 +166,18 @@ def main(argv):
 		if i == 0:
 			c = 0
 			for cell in row:
-				ColWidthT = (width-TableWidth)/(ncol-c)
-				ColWidth = float(ColWidthT)
+				# ColWidthT = (width-TableWidth)/(ncol-c)
+				# ColWidth = float(ColWidthT)
+				ColWidth = 40
 				ColWidthList.append(ColWidth)
 		TableWidth = TableWidth + ColWidth
 		c = c+1
-		RowHeightT = (height-TableHeight)/(nrow-i)
-		RowHeight = float(RowHeightT)
+		# RowHeightT = (height-TableHeight)/(nrow-i)
+		# RowHeight = float(RowHeightT)
+		RowHeight = 15
 		RowHeightList.append(RowHeight)
 		TableHeight = TableHeight + RowHeight
 		i = i+1
-	CellsStyle = scribus.valueDialog('Cells Style','Style name or blank?',"")
-	TextDist = float(scribus.valueDialog('Text distance','Top distance for text (mm)?',"0"))
 	objectlist=[] # here we keep a record of all the created textboxes so we can group them later
 	i = 0
 	scribus.progressTotal(len(data))
@@ -187,75 +187,93 @@ def main(argv):
 		c = 0
 		origin_cd = data[rowindex][0].strip()
 		origin = data[rowindex][1].strip()
+		origin_complete = origin + ' (' + origin_cd + ")"
 		destination_cd = data[rowindex][2].strip()
 		destination = data[rowindex][3].strip()
+		destination_complete = destination + ' (' + destination_cd + ")"
 		fareplan = data[rowindex][4].strip()
-		direction = data[rowindex][5].strip()
+		fareplan_type = data[rowindex][5].strip()
+		fareplan_complete = fareplan + ' ' + fareplan_type[:1]
 		fare = data[rowindex][6].strip()
+		fare = float(fare)
+		fare = "{0:.2f}".format(fare)
 		fare_onboard = data[rowindex][7].strip()
+		fare_onboard = float(fare_onboard)
+		fare_onboard = "{0:.2f}".format(fare_onboard)
+		
+		try:
+			last_origin = data[rowindex - 1][1].strip()
+		except:
+			last_origin = origin
 		
 		cellsize = ColWidthList[c]
 		cellHeight = RowHeightList[i]
-		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.  
-		objectlist.append(textbox)
-		if len(CellsStyle) > 0:
-			scribus.setStyle(CellsStyle, textbox)
-		if TextDist > 0:
-			scribus.setTextDistances(0, 0, TextDist, 0, textbox)
-		scribus.insertText(origin, 0, textbox) # insert the origin into the textbox.
-		vposition = vposition + cellHeight # shift position of cell.  
-		c = c + 1
 		
-		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
+		# Origin textbox 
+		if (rowindex < len(data)):
+			if ((origin != last_origin) or (rowindex == 0)):
+				# Add 'btwn' text
+				textbox = scribus.createText(hposition, vposition, cellsize, 4) # create a textbox.  
+				objectlist.append(textbox)
+				scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
+				scribus.insertText('btwn', 0, textbox) # insert the origin into the textbox.
+				# scribus.setDistances(1,1,1,1) # set the distances.
+				vposition = vposition + 4 # Shift position of cell down.  
+				c = c + 1
+				
+				textbox = scribus.createText(hposition, vposition, cellsize, 10) # create a textbox.  
+				objectlist.append(textbox)
+				scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
+				scribus.insertText(origin_complete, 0, textbox) # insert the origin into the textbox.
+				vposition = vposition + 10 # Shift position of cell down.  
+				c = c + 1
+				
+				# Add 'and' text
+				textbox = scribus.createText(hposition, vposition, cellsize, 4) # create a textbox.  
+				objectlist.append(textbox)
+				scribus.setStyle('andStyle', textbox) # set it in the style 'Headings' as defined in Scribus.  
+				scribus.insertText('and', 0, textbox) # insert the origin into the textbox.
+				vposition = vposition + 4 # Shift position of cell down.  
+				c = c + 1
+		
+		# Destination textbox
+		textbox = scribus.createText(hposition, vposition, cellsize, 10) # create a textbox.
 		objectlist.append(textbox)
-		if len(CellsStyle) > 0:
-			scribus.setStyle(CellsStyle, textbox)
-		if TextDist > 0:
-			scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
-		scribus.insertText(destination, 0, textbox) # insert the destination into the textbox.
-		vposition=vposition + cellHeight # shift position of cell.  
+		scribus.insertText(destination_complete, 0, textbox) # insert the destination into the textbox.
+		vposition = vposition + 10 # Shift position of cell down.  
 		c = c + 1
 		rowindex = rowindex + 1
-		'''
-		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
+		
+		# Fareplan textbox
+		fareplan_box_height = 5
+		if fare_onboard != '0.00':
+			fareplan_box_height = 10
+		textbox = scribus.createText(hposition, vposition, cellsize/2, fareplan_box_height) # create a textbox.
 		objectlist.append(textbox)
-		if len(CellsStyle) > 0:
-			scribus.setStyle(CellsStyle, textbox)
-			if TextDist > 0:
-				scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
-			scribus.insertText(fareplan, 0, textbox) # insert the fareplan into the textbox.
-			hposition=hposition+cellsize #move the position for the next cell
-			c = c+1
+		scribus.insertText(fareplan_complete, 0, textbox) # insert the fareplan into the textbox.
+		hposition = hposition+(cellsize / 2) # Shift position of cell right.  
+		c = c+1
 			
-		textbox = scribus.createText(hposition, vposition, cellsize, cellHeight) # create a textbox.
+		# Fare textbox
+		textbox = scribus.createText(hposition, vposition, cellsize/2, 5) # create a textbox.
 		objectlist.append(textbox)
-		if len(CellsStyle) > 0:
-			scribus.setStyle(CellsStyle, textbox)
-			if TextDist > 0:
-				scribus.setTextDistances(0, 0, TextDist, 0, textbox) 
-			scribus.insertText(fare, 0, textbox) # insert the fare into the textbox.  
-			hposition=hposition+cellsize #move the position for the next cell
+		scribus.insertText(fare, 0, textbox) # insert the fare into the textbox.  
+		c = c+1
+		
+		if fare_onboard != '0.00':
+			vposition = vposition + 5 # Shift position of cell down.  
+			textbox = scribus.createText(hposition, vposition, cellsize/2, 5) # create a textbox.
+			objectlist.append(textbox)
+			scribus.setStyle('OnBoard', textbox)
+			scribus.insertText(fare_onboard, 0, textbox) # insert the fare into the textbox.  
+			hposition = hposition - (cellsize / 2) # Shift position of cell back.
+			vposition = vposition + 5 # Shift position of cell down.  
 			c = c+1
+		else:
+			hposition = hposition - (cellsize / 2) # Shift position of cell back.
+			vposition = vposition + 5 # Shift position of cell down.  
 		i = i+1
-		''''''
-        for cell in row:
-            cell = cell.strip()
-            cellsize=ColWidthList[c]
-            cellHeight=RowHeightList[i]
-            textbox=scribus.createText(hposition, vposition, cellsize, cellHeight) #create a textbox
-            objectlist.append(textbox)
-	    if len(CellsStyle) > 0:
-              scribus.setStyle(CellsStyle,textbox)
-            if TextDist > 0:
-              scribus.setTextDistances(0,0,TextDist,0,textbox) 
-            scribus.insertText(row[2],0, textbox)#insert the text into the textbox
-            hposition=hposition+cellsize #move the position for the next cell
-            c=c+1
-		vposition = vposition + cellHeight	#set vertical position for next row
-		hposition = pos[1] #reset vertical position for next row
-		i = i+1
-		scribus.progressSet(i)
-		'''
+		
 	scribus.deselectAll()
 	scribus.groupObjects(objectlist)
 	scribus.progressReset()
