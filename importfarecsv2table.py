@@ -147,12 +147,9 @@ def main(argv):
 	scribus.setUnit(scribus.UNIT_MILLIMETERS)
 	cellwidthleft = 0
 	cellwidthright = 0
-	pos = getPosition()
 	# Set starting position
 	hposition = 20
 	vposition = 20
-	width = pos[2]
-	height = pos[3]
 	data = getCSVdata()
 	di= getDataInformation(data)
 	ncol = len(data[0])
@@ -162,19 +159,15 @@ def main(argv):
 	TableWidth = 0
 	RowHeightList = []
 	TableHeight=0
-	i=0
+	i = 0
 	for row in data:
 		if i == 0:
 			c = 0
 			for cell in row:
-				# ColWidthT = (width-TableWidth)/(ncol-c)
-				# ColWidth = float(ColWidthT)
 				ColWidth = 40
 				ColWidthList.append(ColWidth)
 		TableWidth = TableWidth + ColWidth
-		c = c+1
-		# RowHeightT = (height-TableHeight)/(nrow-i)
-		# RowHeight = float(RowHeightT)
+		c = c + 1
 		RowHeight = 15
 		RowHeightList.append(RowHeight)
 		TableHeight = TableHeight + RowHeight
