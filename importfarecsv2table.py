@@ -177,11 +177,15 @@ def main(argv):
 	scribus.progressTotal(len(data))
 	scribus.setRedraw(False)
 	rowindex = 0
+	new_row_indication = 1
+	new_page_indication = 1
+	firstorigin_indicator = 1
 	while rowindex < len(data):
 		c = 0
 		origin_cd = data[rowindex][0].strip()
 		origin = data[rowindex][1].strip()
 		origin_complete = origin + ' (' + origin_cd + ")"
+		headerorigin = origin_complete
 		destination_cd = data[rowindex][2].strip()
 		destination = data[rowindex][3].strip()
 		destination_complete = destination + ' (' + destination_cd + ")"
@@ -203,6 +207,41 @@ def main(argv):
 		cellsize = ColWidthList[c]
 		cellHeight = RowHeightList[i]
 		
+		
+		# Check to see if near bottom of the page, if so wrap it over
+		if (vposition > 227):
+			hposition = hposition + cellsize
+			vposition = 20
+			new_row_indication = 1
+		# If at end, reset and create new page 
+		if (hposition > 160):
+			scribus.newPage(-1)
+			hposition = 20
+			vposition = 20
+			new_page_indication = 1
+			firstorigin_indicator = 0
+		
+		if new_row_indication == 1:
+			textbox = scribus.createText(hposition, 16, cellsize/2, 4) # create a textbox.  
+			objectlist.append(textbox)
+			scribus.setStyle('FareplanHeader', textbox)
+			scribus.insertText('Fareplan', 0, textbox)
+			c = c + 1
+			
+			textbox = scribus.createText(hposition+(cellsize/2), 16, cellsize/2, 4) # create a textbox.  
+			objectlist.append(textbox)
+			scribus.setStyle('FareplanHeader', textbox)
+			scribus.insertText('Amount', 0, textbox)
+			c = c + 1
+			
+			if (firstorigin_indicator == 1):
+				headerorigin = origin_complete
+				textbox = scribus.createText(20, 10, cellsize*4, 4) # create a textbox.  
+				objectlist.append(textbox)
+				scribus.setStyle('HeaderOrigin', textbox)
+				scribus.insertText(headerorigin, 0, textbox)
+				c = c + 1
+				
 		# Origin textbox 
 		if (rowindex < len(data)):
 			if ((origin != last_origin) or (rowindex == 0)):
@@ -229,6 +268,16 @@ def main(argv):
 				scribus.insertText('and', 0, textbox) # insert the origin into the textbox.
 				vposition = vposition + 4 # Shift position of cell down.  
 				c = c + 1
+				
+				firstorigin_indicator = firstorigin_indicator + 1
+		
+		if (firstorigin_indicator == 0 and rowindex == (len(data)-1)):
+			headerorigin = origin_complete
+			textbox = scribus.createText(20, 10, cellsize*4, 4) # create a textbox.  
+			objectlist.append(textbox)
+			scribus.setStyle('HeaderOrigin', textbox)
+			scribus.insertText(headerorigin, 0, textbox)
+			c = c + 1
 		
 		# Destination textbox
 		textbox = scribus.createText(hposition, vposition, cellsize, 10) # create a textbox.
@@ -268,6 +317,8 @@ def main(argv):
 			hposition = hposition - (cellsize / 2) # Shift position of cell back.
 			vposition = vposition + 5 # Shift position of cell down.  
 		i = i+1
+		new_row_indication = 0
+		new_page_indication = 0
 		
 	scribus.deselectAll()
 	scribus.groupObjects(objectlist)
