@@ -198,11 +198,18 @@ def main(argv):
 		fare_onboard = data[rowindex][7].strip()
 		fare_onboard = float(fare_onboard)
 		fare_onboard = "{0:.2f}".format(fare_onboard)
+		cellheight_market = 5
+		cellheight_market_dos = 5
 		
 		try:
 			last_origin = data[rowindex - 1][1].strip()
 		except:
 			last_origin = origin
+		
+		try:
+			last_destination = data[rowindex - 1][3].strip()
+		except:
+			last_destination = destination
 		
 		cellsize = ColWidthList[c]
 		cellHeight = RowHeightList[i]
@@ -254,11 +261,14 @@ def main(argv):
 				vposition = vposition + 4 # Shift position of cell down.  
 				c = c + 1
 				
-				textbox = scribus.createText(hposition, vposition, cellsize, 10) # create a textbox.  
+				textbox = scribus.createText(hposition, vposition, cellsize, cellheight_market_dos) # create a textbox.  
 				objectlist.append(textbox)
 				scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
 				scribus.insertText(origin_complete, 0, textbox) # insert the origin into the textbox.
-				vposition = vposition + 10 # Shift position of cell down.  
+				while (scribus.textOverflows(textbox) > 0):
+					cellheight_market_dos += 1
+					scribus.sizeObject(cellsize, cellheight_market_dos, textbox)
+				vposition = vposition + cellheight_market_dos # Shift position of cell down.  
 				c = c + 1
 				
 				# Add 'and' text
@@ -268,6 +278,7 @@ def main(argv):
 				scribus.insertText('and', 0, textbox) # insert the origin into the textbox.
 				vposition = vposition + 4 # Shift position of cell down.  
 				c = c + 1
+				
 				
 				firstorigin_indicator = firstorigin_indicator + 1
 		
@@ -280,11 +291,15 @@ def main(argv):
 			c = c + 1
 		
 		# Destination textbox
-		textbox = scribus.createText(hposition, vposition, cellsize, 10) # create a textbox.
+		textbox = scribus.createText(hposition, vposition, cellsize, cellheight_market) # create a textbox.
 		objectlist.append(textbox)
 		scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
 		scribus.insertText(destination_complete, 0, textbox) # insert the destination into the textbox.
-		vposition = vposition + 10 # Shift position of cell down.  
+		while (scribus.textOverflows(textbox) > 0):
+			cellheight_market += 1
+			scribus.sizeObject(cellsize, cellheight_market, textbox)
+		
+		vposition = vposition + cellheight_market # Shift position of cell down.  
 		c = c + 1
 		rowindex = rowindex + 1
 		
