@@ -282,6 +282,7 @@ def main(argv):
 				
 				firstorigin_indicator = firstorigin_indicator + 1
 		
+		# Insert the origin at the top margin
 		if (firstorigin_indicator == 0 and rowindex == (len(data)-1)):
 			headerorigin = origin_complete
 			textbox = scribus.createText(20, 10, cellsize*4, 4) # create a textbox.  
@@ -291,16 +292,17 @@ def main(argv):
 			c = c + 1
 		
 		# Destination textbox
-		textbox = scribus.createText(hposition, vposition, cellsize, cellheight_market) # create a textbox.
-		objectlist.append(textbox)
-		scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
-		scribus.insertText(destination_complete, 0, textbox) # insert the destination into the textbox.
-		while (scribus.textOverflows(textbox) > 0):
-			cellheight_market += 1
-			scribus.sizeObject(cellsize, cellheight_market, textbox)
-		
-		vposition = vposition + cellheight_market # Shift position of cell down.  
-		c = c + 1
+		if ((destination != last_destination) or (rowindex == 0)):
+			textbox = scribus.createText(hposition, vposition, cellsize, cellheight_market) # create a textbox.
+			objectlist.append(textbox)
+			scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
+			scribus.insertText(destination_complete, 0, textbox) # insert the destination into the textbox.
+			while (scribus.textOverflows(textbox) > 0):
+				cellheight_market += 1
+				scribus.sizeObject(cellsize, cellheight_market, textbox)
+			
+			vposition = vposition + cellheight_market # Shift position of cell down.  
+			c = c + 1
 		rowindex = rowindex + 1
 		
 		# Fareplan textbox
