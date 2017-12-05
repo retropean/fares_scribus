@@ -148,7 +148,7 @@ def main(argv):
 	cellwidthleft = 0
 	cellwidthright = 0
 	# Set starting position
-	hposition = 20
+	hposition = 28
 	vposition = 20
 	data = getCSVdata()
 	di= getDataInformation(data)
@@ -186,6 +186,7 @@ def main(argv):
 		origin = data[rowindex][1].strip()
 		origin_complete = origin + ' (' + origin_cd + ")"
 		headerorigin = origin_complete
+		origin_added = 0
 		destination_cd = data[rowindex][2].strip()
 		destination = data[rowindex][3].strip()
 		destination_complete = destination + ' (' + destination_cd + ")"
@@ -221,9 +222,9 @@ def main(argv):
 			vposition = 20
 			new_row_indication = 1
 		# If at end, reset and create new page 
-		if (hposition > 160):
+		if (hposition > 174):
 			scribus.newPage(-1)
-			hposition = 20
+			hposition = 28
 			vposition = 20
 			new_page_indication = 1
 			firstorigin_indicator = 0
@@ -241,13 +242,13 @@ def main(argv):
 			scribus.insertText('Amount', 0, textbox)
 			c = c + 1
 			
-			if (firstorigin_indicator == 1):
-				headerorigin = origin_complete
-				textbox = scribus.createText(20, 10, cellsize*4, 4) # create a textbox.  
-				objectlist.append(textbox)
-				scribus.setStyle('HeaderOrigin', textbox)
-				scribus.insertText(headerorigin, 0, textbox)
-				c = c + 1
+#			if (firstorigin_indicator == 1):
+#				headerorigin = origin_complete
+#				textbox = scribus.createText(20, 10, cellsize*4, 4) # create a textbox.  
+#				objectlist.append(textbox)
+#				scribus.setStyle('HeaderOrigin', textbox)
+#				scribus.insertText(headerorigin, 0, textbox)
+#				c = c + 1
 				
 		# Origin textbox 
 		if (rowindex < len(data)):
@@ -279,20 +280,20 @@ def main(argv):
 				vposition = vposition + 4 # Shift position of cell down.  
 				c = c + 1
 				
-				
+				origin_added = 1
 				firstorigin_indicator = firstorigin_indicator + 1
 		
-		# Insert the origin at the top margin
-		if (firstorigin_indicator == 0 and rowindex == (len(data)-1)):
-			headerorigin = origin_complete
-			textbox = scribus.createText(20, 10, cellsize*4, 4) # create a textbox.  
-			objectlist.append(textbox)
-			scribus.setStyle('HeaderOrigin', textbox)
-			scribus.insertText(headerorigin, 0, textbox)
-			c = c + 1
+				# Insert the origin at the top margin
+				if (firstorigin_indicator == 1 or rowindex == 0):
+					headerorigin = origin_complete
+					textbox = scribus.createText(28, 10, cellsize*4, 4) # create a textbox.  
+					objectlist.append(textbox)
+					scribus.setStyle('HeaderOrigin', textbox)
+					scribus.insertText(headerorigin, 0, textbox)
+					c = c + 1
 		
 		# Destination textbox
-		if ((destination != last_destination) or (rowindex == 0)):
+		if ((destination != last_destination) or (rowindex == 0) or (origin_added == 1)):
 			textbox = scribus.createText(hposition, vposition, cellsize, cellheight_market) # create a textbox.
 			objectlist.append(textbox)
 			scribus.setStyle('Headings', textbox) # set it in the style 'Headings' as defined in Scribus.  
